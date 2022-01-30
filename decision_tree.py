@@ -5,7 +5,7 @@ import xlsxwriter # Used to export data to Excel file
 import matplotlib as plt # Used to create visual representation of graphs and data structures
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
-from sklearn import tree
+from sklearn import tree, preprocessing
 
 ## look at how to keep the nodes uniform
 
@@ -21,21 +21,22 @@ data_frame = pd.read_csv(path + filename)
 x = data_frame[["Sex","BP","Cholesterol"]] # Features
 y = data_frame["Drug"] # Target variable
 
-titles = ["Sex","BP","Cholesterol","Drug"]
+dataEncoder = preprocessing.LabelEncoder()
+encoded_x_data = x.apply(dataEncoder.fit_transform)
 
 # "leaves" (aka decision nodes) are where we get final output
 # root node is where the decision tree starts
 # Create Decision Tree classifer object
-decision_tree = DecisionTreeClassifier(criterion="entropy", max_depth=3)
-one_hot_data = pd.get_dummies(x,drop_first=True)
+decision_tree = DecisionTreeClassifier(criterion="entropy")
 
 # Train Decision Tree Classifer
-decision_tree = decision_tree.fit(one_hot_data, y)
+decision_tree = decision_tree.fit(encoded_x_data, y)
 
+titles = ["Sex","BP","Cholesterol"]
 text_representation = tree.export_text(decision_tree, feature_names=titles)
 print(text_representation)
 
 
 # Predict the response for test dataset
-##y_pred = decision_tree.predict(one_hot_data)
+##y_pred = decision_tree.predict(encoded_x_data)
 
